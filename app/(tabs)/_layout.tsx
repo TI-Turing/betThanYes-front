@@ -1,17 +1,31 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
-
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { FontAwesome } from '@expo/vector-icons';
-
+import { useAuth } from '../auth/authContext';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Mientras carga la info de autenticación, mostramos un loader
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  // Si no está autenticado, redirigir al login
+  if (!isAuthenticated) {
+    return <Redirect href="/auth/login1" />;
+  }
 
   return (
     <Tabs
@@ -22,12 +36,12 @@ export default function TabLayout() {
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: {
-            // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
           },
           default: {},
         }),
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -49,13 +63,6 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <FontAwesome name="trophy" size={24} color={color} />,
         }}
       />
-      {/* <Tabs.Screen
-        name="goals"
-        options={{
-          title: 'Objetivos',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="trophy.fill" color={color} />,
-        }}
-      /> */}
     </Tabs>
   );
 }

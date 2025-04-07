@@ -18,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesome } from "@expo/vector-icons"; // Para el ícono de 3 rayitas
 import { CheckBox } from 'react-native-elements';
-import  styles  from "./stylesRoutine"; // Importa tus estilos desde el archivo correspondiente
+import  styles  from "../styles/stylesRoutine"; // Importa tus estilos desde el archivo correspondiente
 import { createRoutine } from '../services/routineService'
 
 // Definición del tipo de tarea (para TypeScript)

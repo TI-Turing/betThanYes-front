@@ -38,6 +38,12 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color: '#007bff',
     },
+    greeting: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: 20,
+    },
   });
   
   export default styles;
