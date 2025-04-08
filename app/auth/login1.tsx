@@ -1,42 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de importar AsyncStorage
 import styles from './styles'; // Asegúrate de que la ruta sea correcta
 import { useRouter } from 'expo-router';
+import { ValidateEmailRequest } from "../interfaces/account/validateEmailRequest";
+import { ValidateEmailResponse } from "../interfaces/account/validateEmailResponse";
+import { ApiResponse } from "../interfaces/ApiResponse";
+import { validateEmail } from "../services/validateEmail"; // Asegúrate de que la ruta sea correcta
 
 const LoginScreen = () => {
   const router = useRouter();
   const [email, setEmail] = useState<string>('jlap.11@hotmail.com');
   const [loading, setLoading] = useState<boolean>(false);
 
+  useEffect(() => {
+    const setUserId = async () => {
+      await AsyncStorage.setItem('userId', '');
+    };
+
+    setUserId();
+  }, []); // El array vacío asegura que esto se ejecute solo una vez al montar el componente
+
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email.trim());
   };
 
-  // Simula la llamada al servicio para verificar si el correo está registrado
   const checkEmailExists = async (email: string): Promise<number> => {
-    // Aquí deberías hacer una llamada real a tu API
-    // Por ejemplo:
-    // const response = await fetch('http://<tu-api-url>/check-email', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email }),
-    // });
-    // const data = await response.json();
-    // return data.exists; // Suponiendo que el servicio devuelve { exists: 1 } o { exists: 0 }
+    try {
+      const apiRequest: ValidateEmailRequest = {
+        email: email, // Agrega el parámetro de consulta con el valor del email
+      };
 
-    // Simulación de respuesta del servicio
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (email === 'jlap.11@hotmail.com') {
-          resolve(1); // Correo registrado
-        } else {
-          resolve(0); // Correo no registrado
-        }
-      }, 1000); // Simula un retraso de 1 segundo
-    });
+      const result = await validateEmail(apiRequest);
+
+      console.log('Resultado de la validación del correo:', result.Data.Result);
+      if (result.Data.Result) {
+        console.log('Correo registrado en la base de datos');
+        return 1; // Correo registrado
+      } else {
+        console.log('Correo no registrado en la base de datos');
+        return 0; // Correo no registrado
+      }
+    } catch (error) {
+      console.error('Error al validar el correo:', error);
+      throw error; // Lanza el error para que pueda ser manejado por el llamador
+    }
   };
 
   const handleNext = async () => {
@@ -52,17 +63,16 @@ const LoginScreen = () => {
 
     setLoading(true);
     try {
-      // Llama al servicio para verificar si el correo está registrado
       const emailExists = await checkEmailExists(email);
-
-      if (emailExists === 1) {
-        // Redirige a login2 si el correo está registrado
+      console.log('Estado del correo:', emailExists);
+      if (emailExists == 1) {
+        console.log('Correo registrado, redirigiendo a login2...');
         router.push({
           pathname: '/auth/login2',
           params: { email },
         });
       } else {
-        // Redirige a register1 si el correo no está registrado
+        console.log('Correo no registrado, redirigiendo a register1...');
         router.push({
           pathname: '/auth/register1',
           params: { email },

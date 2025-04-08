@@ -5,6 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import ProgressHeader from './components/headerBar'; // Asegúrate de que la ruta sea correcta
 import styles from '../styles/stylesRegister'; // Usa los mismos estilos que en login
 import { createUser } from '../services/createUser'; // Asegúrate de que la ruta sea correcta
+import { ApiRequest } from "../interfaces/user/createRequest";
 
 export default function RegisterStepOne() {
   const router = useRouter();
@@ -55,8 +56,13 @@ export default function RegisterStepOne() {
   const create = async () => {
     setLoading(true);
     try {
+      console.log('Creando usuario...');
+      const apiRequest: ApiRequest = {
+        email: email || '', // Asegúrate de que el correo esté definido aquí
+        password: password || '', // Asegúrate de que la contraseña esté definida aqui
+      }
       // Llama al servicio createUser
-      await createUser(email || '', password);
+      await createUser(apiRequest);
       // Si no hay errores, llama a handleNext
       handleNext();
     } catch (error: any) {
