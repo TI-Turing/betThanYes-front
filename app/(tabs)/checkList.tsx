@@ -20,7 +20,7 @@ import { FontAwesome } from "@expo/vector-icons"; // Para el ícono de 3 rayitas
 import { CheckBox } from 'react-native-elements';
 import  styles  from "../styles/stylesRoutine"; // Importa tus estilos desde el archivo correspondiente
 import { createRoutine } from '../services/routineService'
-
+import  ProfileScreen  from "../auth/logout"; // Asegúrate de que la ruta sea correcta
 // Definición del tipo de tarea (para TypeScript)
 type Task = {
   id: string; // Identificador único de la tarea
@@ -439,6 +439,7 @@ export default function Checklist() {
                 <Text>Opción 3</Text>
               </TouchableOpacity>
               <Button title="Cerrar" onPress={closeMenu} />
+              <ProfileScreen />               
             </Animated.View>
           </Modal>
         )}

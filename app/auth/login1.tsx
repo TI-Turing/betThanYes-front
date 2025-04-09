@@ -112,9 +112,9 @@ const LoginScreen = () => {
         Siguiente
       </Button>
 
-      <TouchableOpacity onPress={() => router.push('/auth/register1')}>
+      {/* <TouchableOpacity onPress={() => router.push('/auth/register1')}>
         <Text style={styles.registerText}>¿No tienes cuenta? Regístrate</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

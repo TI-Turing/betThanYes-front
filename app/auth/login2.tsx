@@ -1,20 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from './styles';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useAuth } from '../auth/authContext';
+import { resetPassword } from "../services/resetPasswordService";
+import { ResetPasswordRequest } from "../interfaces/auth/resetPasswordRequest";
 
 const LoginPasswordScreen = () => {
   const router = useRouter();
   const { email } = useLocalSearchParams<{ email: string }>();
+  const { login } = useAuth();
 
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
 
-  useEffect(() => {
-    console.log('Email recibido:', email); // Verifica si el email está llegando
-  }, [email]);
+  const resetPasswordHandler = async ()  => {
+    const apiRequest: ResetPasswordRequest = {
+      Email: email
+    }
+     if((await resetPassword(apiRequest)).Data.Result) {
+      Alert.alert('Éxito', 'Se ha enviado un correo para restablecer tu contraseña, rebica tu bandeja de entrada o spam.');
+    } else {
+      Alert.alert('Error', 'No se pudo enviar el correo para restablecer la contraseña.');
+    }
+  };
 
   const handleLogin = async () => {
     if (!password.trim()) {
@@ -22,29 +34,22 @@ const LoginPasswordScreen = () => {
       return;
     }
 
+    if (!email) {
+      Alert.alert('Error', 'No se recibió un correo electrónico válido.');
+      return;
+    }
+
     setLoading(true);
+
     try {
-      const response = await fetch('http://<tu-api-url>/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+      const success = await login(email, password);
 
-      if (!response.ok) {
-        const message =
-          response.status === 401
-            ? 'Credenciales inválidas'
-            : response.status === 500
-            ? 'Error del servidor. Inténtalo más tarde.'
-            : 'Error al iniciar sesión';
-        throw new Error(message);
+      if (success) {
+        // Redirige al tab principal. La redirección final la controla el layout si está autenticado.
+        router.replace('../(tabs)/');
+      } else {
+        Alert.alert('Error', 'Credenciales incorrectas');
       }
-
-      const data = await response.json();
-      Alert.alert('Éxito', 'Has iniciado sesión correctamente');
-
-      // Aquí puedes guardar el token en asyncStorage o redirigir
-      // router.replace('/(tabs)/index');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Ocurrió un error');
     } finally {
@@ -54,12 +59,14 @@ const LoginPasswordScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>¡Estas de vuelta!</Text>
+      {/* Botón para retroceder */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <FontAwesome name="arrow-left" size={20} color="#555" />
+        <Text style={styles.backButtonText}>Atrás</Text>
+      </TouchableOpacity>
 
-      {/* Saludo con el correo */}
-      <Text style={styles.greeting}>
-        Hola {email || 'Usuario'},
-      </Text>
+      <Text style={styles.title}>¡Estás de vuelta!</Text>
+      <Text style={styles.greeting}>Hola {email || 'Usuario'},</Text>
 
       <View style={styles.inputContainer}>
         <FontAwesome name="lock" size={22} color="#555" style={styles.icon} />
@@ -67,9 +74,17 @@ const LoginPasswordScreen = () => {
           label="Contraseña"
           value={password}
           onChangeText={setPassword}
-          secureTextEntry
+          secureTextEntry={!showPassword} // Cambia según el estado de `showPassword`
           style={styles.input}
           mode="flat"
+          right={
+            <TextInput.Icon
+              icon={showPassword ? 'eye-off' : 'eye'} // Cambia el ícono según el estado
+              onPress={() => setShowPassword(!showPassword)} // Cambia el estado al presionar
+              color="#aaa"
+              size={20}
+            />
+          }
         />
       </View>
 
@@ -82,6 +97,13 @@ const LoginPasswordScreen = () => {
       >
         Iniciar sesión
       </Button>
+
+      {/* Opción de recuperar contraseña */}
+      <TouchableOpacity 
+      onPress={() => resetPasswordHandler()}
+      >
+        <Text style={styles.forgotPassword}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
     </View>
   );
 };

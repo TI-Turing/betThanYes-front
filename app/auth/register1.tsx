@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Text, TouchableWithoutFeedback, Alert, TouchableOpacity } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import ProgressHeader from './components/headerBar'; // Asegúrate de que la ruta sea correcta
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import styles from '../styles/stylesRegister'; // Usa los mismos estilos que en login
 import { createUser } from '../services/createUser'; // Asegúrate de que la ruta sea correcta
 import { ApiRequest } from "../interfaces/user/createRequest";
@@ -10,8 +10,8 @@ import { ApiRequest } from "../interfaces/user/createRequest";
 export default function RegisterStepOne() {
   const router = useRouter();
   const { email } = useLocalSearchParams<{ email: string }>(); // Obtén el correo desde los parámetros
-  const [password, setPassword] = useState('3125475329a');
-  const [confirmPassword, setConfirmPassword] = useState('3125475329a');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para mostrar/ocultar confirmación
@@ -60,7 +60,7 @@ export default function RegisterStepOne() {
       const apiRequest: ApiRequest = {
         email: email || '', // Asegúrate de que el correo esté definido aquí
         password: password || '', // Asegúrate de que la contraseña esté definida aqui
-      }
+      };
       // Llama al servicio createUser
       await createUser(apiRequest);
       // Si no hay errores, llama a handleNext
@@ -75,83 +75,90 @@ export default function RegisterStepOne() {
   return (
     <TouchableWithoutFeedback>
       <View style={styles.container}>
-        {/* Barra de progreso */}
-        <View style={styles.progressContainer}>
-          <ProgressHeader step={1} totalSteps={3} />
+        {/* Botón para retroceder */}
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <FontAwesome name="arrow-left" size={20} color="#555" />
+          <Text style={styles.backButtonText}>Atrás</Text>
+        </TouchableOpacity>
+
+        {/* Contenedor para centrar el contenido */}
+        <View style={styles.content}>
+          {/* Saludo con el correo */}
+          <Text style={styles.title}>¡Bienvenido!</Text>
+          <Text style={styles.greeting}>Hola {email || 'Usuario'},</Text>
+
+          {/* Reglas de la contraseña */}
+          <View style={styles.rulesContainer}>
+          <Text style={[styles.rule]}>
+              La contraseña debe cumplir con las siguientes reglas:
+            </Text>
+            <Text style={[styles.rule, { color: rulesStatus.length }]}>
+              - Tener entre 8 y 24 caracteres.
+            </Text>
+            <Text style={[styles.rule, { color: rulesStatus.letter }]}>
+              - Contener al menos una letra.
+            </Text>
+            <Text style={[styles.rule, { color: rulesStatus.number }]}>
+              - Contener al menos un número.
+            </Text>
+            <Text style={[styles.rule, { color: rulesStatus.match }]}>
+              - Las contraseñas deben coincidir.
+            </Text>
+          </View>
+
+          {/* Campos de contraseña */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              label="Contraseña"
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                validatePassword(text, confirmPassword);
+              }}
+              secureTextEntry={!showPassword}
+              style={styles.input}
+              mode="flat"
+              right={
+                <TextInput.Icon
+                  icon={showPassword ? 'eye-off' : 'eye'}
+                  onPress={() => setShowPassword(!showPassword)}
+                  color="#aaa"
+                  size={20}
+                />
+              }
+            />
+            <TextInput
+              label="Confirmar Contraseña"
+              value={confirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                validatePassword(password, text);
+              }}
+              secureTextEntry={!showConfirmPassword}
+              style={styles.input}
+              mode="flat"
+              right={
+                <TextInput.Icon
+                  icon={showConfirmPassword ? 'eye-off' : 'eye'}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  color="#aaa"
+                  size={20}
+                />
+              }
+            />
+          </View>
+
+          {/* Botón siguiente */}
+          <Button
+            mode="contained"
+            onPress={create}
+            style={styles.button}
+            loading={loading}
+            disabled={!isFormValid() || loading}
+          >
+            Siguiente
+          </Button>
         </View>
-
-        {/* Saludo con el correo */}
-        <Text style={styles.title}>¡Bienvenido!</Text>
-        <Text style={styles.greeting}>Hola {email || 'Usuario'},</Text>
-
-        {/* Reglas de la contraseña */}
-        <View style={styles.rulesContainer}>
-          <Text style={[styles.rule, { color: rulesStatus.length }]}>
-            - Tener entre 8 y 24 caracteres.
-          </Text>
-          <Text style={[styles.rule, { color: rulesStatus.letter }]}>
-            - Contener al menos una letra.
-          </Text>
-          <Text style={[styles.rule, { color: rulesStatus.number }]}>
-            - Contener al menos un número.
-          </Text>
-          <Text style={[styles.rule, { color: rulesStatus.match }]}>
-            - Las contraseñas deben coincidir.
-          </Text>
-        </View>
-
-        {/* Campos de contraseña */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            label="Contraseña"
-            value={password}
-            onChangeText={(text) => {
-              setPassword(text);
-              validatePassword(text, confirmPassword);
-            }}
-            secureTextEntry={!showPassword}
-            style={styles.input}
-            mode="flat"
-            right={
-              <TextInput.Icon
-                icon={showPassword ? 'eye-off' : 'eye'}
-                onPress={() => setShowPassword(!showPassword)}
-                color="#aaa" // Color más claro
-                size={20} // Tamaño más pequeño
-              />
-            }
-          />
-          <TextInput
-            label="Confirmar Contraseña"
-            value={confirmPassword}
-            onChangeText={(text) => {
-              setConfirmPassword(text);
-              validatePassword(password, text);
-            }}
-            secureTextEntry={!showConfirmPassword}
-            style={styles.input}
-            mode="flat"
-            right={
-              <TextInput.Icon
-                icon={showConfirmPassword ? 'eye-off' : 'eye'}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                color="#aaa" // Color más claro
-                size={20} // Tamaño más pequeño
-              />
-            }
-          />
-        </View>
-
-        {/* Botón siguiente */}
-        <Button
-          mode="contained"
-          onPress={create} // Llama al método create
-          style={styles.button}
-          loading={loading}
-          disabled={!isFormValid() || loading} // Deshabilitado si las reglas no se cumplen o si está cargando
-        >
-          Siguiente
-        </Button>
       </View>
     </TouchableWithoutFeedback>
   );

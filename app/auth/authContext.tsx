@@ -1,86 +1,105 @@
-// No logueado
 import React, {
-  createContext,
-  useEffect,
-  useState,
-  useContext,
-  ReactNode,
-} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Alert } from 'react-native';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  token: string | null;
-  login: (token: string) => Promise<void>;
-  logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider');
+    createContext,
+    useContext,
+    useEffect,
+    useState,
+    ReactNode,
+  } from 'react';
+  import * as SecureStore from 'expo-secure-store';
+  import { Alert } from 'react-native';
+  import {
+    login as authServiceLogin,
+    logout as authServiceLogout,
+    getAccessToken,
+  } from '../services/authService';
+  
+  interface AuthContextType {
+    isAuthenticated: boolean;
+    isLoading: boolean;
+    login: (email: string, password: string) => Promise<boolean>;
+    logout: () => Promise<void>;
+    accessToken: string | null;
   }
-  return context;
-};
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const initializeAuth = async () => {
+  
+  const AuthContext = createContext<AuthContextType | undefined>(undefined);
+  
+  export const useAuth = (): AuthContextType => {
+    const context = useContext(AuthContext);
+    if (!context) {
+      throw new Error('useAuth debe usarse dentro de un AuthProvider');
+    }
+    return context;
+  };
+  
+  interface AuthProviderProps {
+    children: ReactNode;
+  }
+  
+  export const AuthProvider = ({ children }: AuthProviderProps) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [accessToken, setAccessToken] = useState<string | null>(null);
+  
+    useEffect(() => {
+      const checkAuth = async () => {
+        try {
+          const token = await getAccessToken();
+          if (token) {
+            setIsAuthenticated(true);
+            setAccessToken(token);
+          }
+        } catch (error) {
+          console.error('Error al obtener token:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+  
+      checkAuth();
+    }, []);
+  
+    const login = async (email: string, password: string): Promise<boolean> => {
       try {
-        const storedToken = await AsyncStorage.getItem('token');
-        if (storedToken) {
-          setToken(storedToken);
+        const success = await authServiceLogin({ email, password });
+  
+        if (success) {
+          const token = await getAccessToken();
+          setAccessToken(token);
           setIsAuthenticated(true);
+          return true;
+        } else {
+          return false;
         }
       } catch (error) {
-        console.error('Error al verificar el token:', error);
-      } finally {
-        setIsLoading(false);
+        console.error('Error en login:', error);
+        Alert.alert('Error', 'No se pudo iniciar sesión. Inténtalo de nuevo.');
+        return false;
       }
     };
-
-    initializeAuth();
-  }, []);
-
-  const login = async (newToken: string) => {
-    try {
-      await AsyncStorage.setItem('token', newToken);
-      setToken(newToken);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error al guardar el token:', error);
-      Alert.alert('Error', 'No se pudo iniciar sesión. Inténtalo de nuevo.');
-    }
+  
+    const logout = async () => {
+      try {
+        await authServiceLogout();
+        setAccessToken(null);
+        setIsAuthenticated(false);
+      } catch (error) {
+        console.error('Error al cerrar sesión:', error);
+        Alert.alert('Error', 'No se pudo cerrar sesión. Inténtalo de nuevo.');
+      }
+    };
+  
+    return (
+      <AuthContext.Provider
+        value={{
+          isAuthenticated,
+          isLoading,
+          login,
+          logout,
+          accessToken,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
   };
-
-  const logout = async () => {
-    try {
-      await AsyncStorage.removeItem('token');
-      setToken(null);
-      setIsAuthenticated(false);
-    } catch (error) {
-      console.error('Error al eliminar el token:', error);
-      Alert.alert('Error', 'No se pudo cerrar sesión. Inténtalo de nuevo.');
-    }
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, isLoading, token, login, logout }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  
