@@ -16,11 +16,15 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { FontAwesome } from "@expo/vector-icons"; // Para el ícono de 3 rayitas
+import { FontAwesome } from "@expo/vector-icons"; // Para el ícono de 3 rayitas y el ícono de chulito
 import { CheckBox } from 'react-native-elements';
 import  styles  from "../styles/stylesRoutine"; // Importa tus estilos desde el archivo correspondiente
 import { createRoutine } from '../services/routineService'
 import  ProfileScreen  from "../auth/logout"; // Asegúrate de que la ruta sea correcta
+import  ProgressRoutine  from "../components/progressRoutine"; // Asegúrate de que la ruta sea correcta
+import { useMenu } from "./_layout"; // Importa el contexto del menú global
+import { useTheme } from 'react-native-paper';
+
 // Definición del tipo de tarea (para TypeScript)
 type Task = {
   id: string; // Identificador único de la tarea
@@ -29,8 +33,10 @@ type Task = {
   completed: boolean; // Indica si la tarea está completada
   type: number; // Tipo de tarea (1 = responsabilidad, 2 = hábito)
 };
-
+ 
 export default function Checklist() {
+  const { setDynamicOptions } = useMenu(); // Usa el contexto del menú global
+
   // Estado para almacenar las tareas
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -39,7 +45,6 @@ export default function Checklist() {
 
   // Estado para controlar la visibilidad del modal
   const [modalVisible, setModalVisible] = useState(false); // Modal de tareas
-  const [menuModalVisible, setMenuModalVisible] = useState(false); // Menú lateral
 
   // Estado para indicar si se está editando una tarea
   const [isEditing, setIsEditing] = useState(false);
@@ -111,6 +116,24 @@ export default function Checklist() {
     updateCurrentTime();
     const interval = setInterval(updateCurrentTime, 60000); // Actualiza cada minuto
     return () => clearInterval(interval); // Limpia el intervalo al desmontar
+  }, []);
+
+  useEffect(() => {
+    // Establece las opciones dinámicas para esta pantalla
+    setDynamicOptions([
+      {
+        label: "Nueva rutina",
+        action: () => setModalVisible(true),
+      },
+      {
+        label: "Seleccionar rutina",
+        action: () => console.log("Editar tarea seleccionada"),
+      },
+      {
+        label: "Configurar rutinas",
+        action: () => console.log("Eliminar tarea seleccionada"),
+      },
+    ]);
   }, []);
 
   // Alterna el estado completado de una tarea
@@ -195,26 +218,6 @@ export default function Checklist() {
     setMenuVisible({ taskId: null, position: null });
   };
 
-  // Función para abrir el menú con animación
-  const openMenu = () => {
-    setMenuModalVisible(true);
-    Animated.timing(menuAnimation, {
-      toValue: 1,
-      duration: 300,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: false,
-    }).start();
-  };
-
-  // Función para cerrar el menú con animación
-  const closeMenu = () => {
-    Animated.timing(menuAnimation, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.in(Easing.ease),
-      useNativeDriver: false,
-    }).start(() => setMenuModalVisible(false));
-  };
 
   // Estilo animado para el menú
   const menuStyle = {
@@ -260,14 +263,6 @@ export default function Checklist() {
       }}
     >
       <View style={styles.container}>
-        {/* Encabezado */}
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>Lista de Chequeo</Text>
-          <TouchableOpacity onPress={openMenu} style={styles.menuButton}>
-            <FontAwesome name="bars" size={24} color="#333" />
-          </TouchableOpacity>
-        </View>
-
         {/* Lista de tareas */}
         <FlatList
           data={tasks}
@@ -307,15 +302,27 @@ export default function Checklist() {
                   }}
                 >
                   <View style={styles.taskContent}>
-                    <Text style={styles.taskTime}>{item.time}</Text>
-                    <Text
-                      style={[
-                        styles.taskText,
-                        item.completed && styles.completedText,
-                      ]}
-                    >
-                      {item.title}
-                    </Text>
+                    {/* Contenedor para el texto */}
+                    <View style={styles.taskTextContainer}>
+                      <Text style={styles.taskTime}>{item.time}</Text>
+                      <Text
+                        style={[
+                          styles.taskText,
+                          (item.completed || isPastDue) && styles.completedText, // Aplica gris a tareas completadas o vencidas
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
+                    </View>
+                    {/* Ícono de chulito para tareas completadas */}
+                    {item.completed && (
+                      <FontAwesome
+                        name="check-circle"
+                        size={20}
+                        color="#FFFFFF" // Ícono blanco
+                        style={styles.completedIcon}
+                      />
+                    )}
                   </View>
                 </TouchableOpacity>
               </View>
@@ -416,32 +423,6 @@ export default function Checklist() {
               <Text>Eliminar</Text>
             </TouchableOpacity>
           </View>
-        )}
-
-        {/* Menú lateral */}
-        {menuModalVisible && (
-          <Modal transparent={true} animationType="none" visible={menuModalVisible}>
-            <TouchableWithoutFeedback onPress={closeMenu}>
-              <View style={styles.overlay} />
-            </TouchableWithoutFeedback>
-            <Animated.View style={[styles.menuContainer, menuStyle]}>
-              <Text style={styles.menuTitle}>Opciones</Text>
-              <TouchableOpacity
-                style={styles.menuItem}
-                onPress={() => setRoutineModalVisible(true)}
-              >
-                <Text>Nueva rutina</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem}>
-                <Text>Opción 2</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.menuItem}>
-                <Text>Opción 3</Text>
-              </TouchableOpacity>
-              <Button title="Cerrar" onPress={closeMenu} />
-              <ProfileScreen />               
-            </Animated.View>
-          </Modal>
         )}
 
         {/* Modal para añadir/editar rutina */}

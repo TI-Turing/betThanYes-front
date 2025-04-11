@@ -1,11 +1,10 @@
 import { StyleSheet } from "react-native";
 
-// Estilos para los componentes
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
     padding: 20,
+    backgroundColor: "#121212",
   },
   headerContainer: {
     flexDirection: "row",
@@ -16,49 +15,59 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: "bold",
+    color: "#fff",
   },
   menuButton: {
     padding: 10,
   },
   task: {
+    backgroundColor: "#1F1F1F",
     padding: 15,
+    marginVertical: 8,
     borderRadius: 8,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: "#3B82F6",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   completedTask: {
-    backgroundColor: "#d4edda",
+    backgroundColor: "#3B82F6",
   },
   pastDueTask: {
-    backgroundColor: "#ffe5b4",
+    backgroundColor: "rgba(59, 130, 246, 0.2)",
   },
   futureTask: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "#3B82F6",
   },
   taskContent: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between", // Alinea el texto a la izquierda y el ícono al borde derecho
+    width: "100%", // Asegúrate de que ocupe todo el ancho disponible
+  },
+  taskTextContainer: {
+    flexDirection: "row", // Alinea la hora y el texto horizontalmente
+    alignItems: "center", // Centra verticalmente la hora y el texto
   },
   taskTime: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginRight: 10,
-    color: "#555",
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
+    marginRight: 10, // Espaciado entre la hora y el texto
   },
   taskText: {
-    fontSize: 18,
-    color: "#333",
+    color: "#FFFFFF", // Blanco para tareas normales
+    fontSize: 16,
+    fontWeight: "bold",
   },
   completedText: {
-    textDecorationLine: "line-through",
-    color: "#888",
+    color: "#FFFFFF", // Gris claro para tareas completadas o vencidas
+  },
+  futureText: {
+    color: "#60A5FA",
   },
   dividerContainer: {
     alignItems: "center",
@@ -66,7 +75,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 2,
-    backgroundColor: "red",
+    backgroundColor: "#3B82F6",
     width: "100%",
     position: "relative",
     alignItems: "center",
@@ -74,16 +83,16 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     position: "absolute",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#121212",
     paddingHorizontal: 5,
     fontSize: 16,
-    color: "#ff0000",
+    color: "#3B82F6",
   },
   addButton: {
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: "#007BFF",
+    backgroundColor: "#3B82F6",
     width: 60,
     height: 60,
     borderRadius: 30,
@@ -187,6 +196,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     fontSize: 16,
     color: "#333",
+  },
+  progressContainer: {
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  completedIcon: {
+    marginRight: 0, // Elimina cualquier margen derecho
   },
 });
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Card, Button, ProgressBar, FAB } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 
 const HomeScreen = () => {
   const fraseMotivacional = "Cada día es una nueva oportunidad para mejorar.";
@@ -11,6 +12,7 @@ const HomeScreen = () => {
     contenido: "Descubre estrategias efectivas para mantener tus hábitos...",
   };
   const tareasVencidas = 0; // Cambia esto dinámicamente según tu lógica
+  const { colors } = useTheme();
 
 
   return (
@@ -19,7 +21,7 @@ const HomeScreen = () => {
         {/* Frase Motivacional */}
         <Card style={styles.card}>
           <Card.Content>
-            <Text style={styles.motivationalText}>{fraseMotivacional}</Text>
+            <Text style={[{ color: colors.onBackground },styles.motivationalText]}>{fraseMotivacional}</Text>
           </Card.Content>
         </Card>
 
@@ -28,7 +30,9 @@ const HomeScreen = () => {
           <Card.Title title="Rutina Diaria" />
           <Card.Content>
             <ProgressBar progress={rutinaProgreso} color="#4CAF50" />
-            <Text style={styles.progressText}>{Math.round(rutinaProgreso * 100)}% completado</Text>
+            <Text style={[{ color: colors.onBackground }, styles.progressText]}>
+              {Math.round(rutinaProgreso * 100)}% completado
+              </Text>
 
             {/* Tareas vencidas */}
             <Text style={[styles.taskWarning, tareasVencidas > 0 && styles.taskWarningActive]}>
@@ -45,7 +49,7 @@ const HomeScreen = () => {
           <Card.Title title="Progreso de Objetivos" />
           <Card.Content>
             <ProgressBar progress={objetivoProgreso} color="#FF9800" />
-            <Text style={styles.progressText}>{Math.round(objetivoProgreso * 100)}% completado</Text>
+            <Text style={[{ color: colors.onBackground },styles.progressText]}>{Math.round(objetivoProgreso * 100)}% completado</Text>
           </Card.Content>
         </Card>
 
@@ -53,8 +57,8 @@ const HomeScreen = () => {
         <Card style={styles.card}>
           <Card.Title title="Post Popular" />
           <Card.Content>
-            <Text style={styles.postTitle}>{postPopular.titulo}</Text>
-            <Text numberOfLines={2}>{postPopular.contenido}</Text>
+            <Text style={[{ color: colors.onBackground }, styles.postTitle]}>{postPopular.titulo}</Text>
+            <Text style={[{ color: colors.onBackground }]} numberOfLines={2}>{postPopular.contenido}</Text>
           </Card.Content>
           <Card.Actions>
             <Button mode="text" onPress={() => console.log('Ver más')}>Ver más</Button>
@@ -76,7 +80,7 @@ const styles = StyleSheet.create({
   taskWarning: {
     marginTop: 8,
     textAlign: 'center',
-    color: '#777', // Gris si no hay tareas vencidas
+    color: '#bcc2c2', // Gris si no hay tareas vencidas
   },
   taskWarningActive: {
     color: 'red', // Rojo si hay tareas vencidas
@@ -84,7 +88,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#121212',
   },
   content: {
     paddingHorizontal: 16,
@@ -92,7 +96,7 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
-    backgroundColor: '#fff',
+    backgroundColor: '#1f2020',
   },
   motivationalText: {
     fontSize: 18,
