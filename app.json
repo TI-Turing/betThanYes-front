@@ -37,6 +37,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+     "releaseChannel": "default"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
     }
   }
 }

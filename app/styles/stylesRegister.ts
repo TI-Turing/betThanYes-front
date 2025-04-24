@@ -4,7 +4,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#121212',
   },
   progressContainer: {
     position: 'absolute',
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: 'white',
     marginBottom: 20,
     textAlign: 'center',
   },
