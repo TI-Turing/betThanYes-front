@@ -204,6 +204,19 @@ const styles = StyleSheet.create({
   completedIcon: {
     marginRight: 0, // Elimina cualquier margen derecho
   },
+  routineItem: {
+    padding: 15,
+    marginVertical: 8,
+    borderRadius: 8,
+    backgroundColor: "#f0f0f0",
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+  routineText: {
+    fontSize: 16,
+    color: "#333",
+    fontWeight: "bold",
+  },
 });
 
 export default styles;

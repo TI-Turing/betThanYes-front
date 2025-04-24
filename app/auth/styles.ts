@@ -5,13 +5,14 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       paddingHorizontal: 24,
-      backgroundColor: '#fff',
+      backgroundColor: '#121212',
     },
     title: {
       fontSize: 28,
       marginBottom: 24,
       textAlign: 'center',
       fontWeight: 'bold',
+      color: '#fff',
     },
     inputContainer: {
       flexDirection: 'row',

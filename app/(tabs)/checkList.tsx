@@ -14,16 +14,19 @@ import {
   Animated,
   Easing
 } from "react-native";
+import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FontAwesome } from "@expo/vector-icons"; // Para el ícono de 3 rayitas y el ícono de chulito
 import { CheckBox } from 'react-native-elements';
 import  styles  from "../styles/stylesRoutine"; // Importa tus estilos desde el archivo correspondiente
-import { createRoutine } from '../services/routineService'
+import { createRoutine } from '../services/routine/create'
+import { GetAllRoutinesByUserId } from "../services/routine/getAll"; // Importa el servicio
 import  ProfileScreen  from "../auth/logout"; // Asegúrate de que la ruta sea correcta
 import  ProgressRoutine  from "../components/progressRoutine"; // Asegúrate de que la ruta sea correcta
 import { useMenu } from "./_layout"; // Importa el contexto del menú global
 import { useTheme } from 'react-native-paper';
+import { Routine } from "../interfaces/routine/routine"; // Asegúrate de que la ruta sea correcta
 
 // Definición del tipo de tarea (para TypeScript)
 type Task = {
@@ -36,6 +39,9 @@ type Task = {
  
 export default function Checklist() {
   const { setDynamicOptions } = useMenu(); // Usa el contexto del menú global
+
+  // Estado para almacenar las rutinas
+  const [routines, setRoutines] = useState<Routine[]>([]);
 
   // Estado para almacenar las tareas
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -127,7 +133,7 @@ export default function Checklist() {
       },
       {
         label: "Seleccionar rutina",
-        action: () => console.log("Editar tarea seleccionada"),
+        action: () => selectRoutineModal(),
       },
       {
         label: "Configurar rutinas",
@@ -135,6 +141,27 @@ export default function Checklist() {
       },
     ]);
   }, []);
+
+  const selectRoutineModal = () => {
+    setRoutineModalVisible(true); // Abre el modal de selección de rutina
+  };
+
+  // Llama al servicio al montar el componente
+  useEffect(() => {
+    const fetchRoutines = async () => {
+      try {
+        const userId = await SecureStore.getItem('userId')?? ''; // Reemplaza con el ID del usuario actual
+        console.log("ID de usuario:", userId);
+        const routinesData = await GetAllRoutinesByUserId(userId);
+        setRoutines(routinesData); // Guarda las rutinas en el estado
+        console.log("Rutinas obtenidas:", routinesData);
+      } catch (error) {
+        console.error("Error al obtener las rutinas:", error);
+      }
+    };
+
+    fetchRoutines();
+  }, []); // Ejecuta solo al montar el componente
 
   // Alterna el estado completado de una tarea
   const toggleTask = (id: string) => {
@@ -464,8 +491,41 @@ export default function Checklist() {
             </View>
           </View>
         </Modal>
+
+        {/* Modal para listar las rutinas */}
+        <Modal
+          visible={routineModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setRoutineModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Seleccionar Rutina</Text>
+
+              {/* Lista de rutinas */}
+              <FlatList
+                data={routines}
+                keyExtractor={(item) => item.Id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.routineItem}
+                    onPress={() => {
+                      console.log("Rutina seleccionada:", item.RoutineName);
+                      setRoutineModalVisible(false); // Cierra el modal al seleccionar una rutina
+                    }}
+                  >
+                    <Text style={styles.routineText}>{item.RoutineName}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+
+              {/* Botón para cerrar el modal */}
+              <Button title="Cerrar" onPress={() => setRoutineModalVisible(false)} />
+            </View>
+          </View>
+        </Modal>
       </View>
     </TouchableWithoutFeedback>
   );
 }
-

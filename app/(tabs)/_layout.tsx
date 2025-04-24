@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import React, { useState, createContext, useContext } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Modal, Animated, Easing } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import  LogoutOption  from '../auth/logout'; // Asegúrate de que la ruta sea correcta
 
 // Contexto para manejar las opciones dinámicas del menú
 const MenuContext = createContext({
@@ -115,9 +116,7 @@ export default function TabLayout() {
                 <TouchableOpacity style={styles.menuItem}>
                   <Text style={styles.menuText}>Configuración</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.menuItem}>
-                  <Text style={styles.menuText}>Cerrar sesión</Text>
-                </TouchableOpacity>
+                <LogoutOption />
               </View>
             </Animated.View>
           </Modal>

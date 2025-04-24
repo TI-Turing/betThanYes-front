@@ -18,10 +18,12 @@ export const login = async (credentials: LoginRequest): Promise<boolean> => {
       console.log('Access Token:', AccessToken);
         console.log('Refresh Token:', RefreshToken);
         console.log('Email:', credentials.email);
+        console.log('UserId:', response.data.Data.Id);
 
       await SecureStore.setItemAsync('accessToken', AccessToken);
       await SecureStore.setItemAsync('refreshToken', RefreshToken);
       await SecureStore.setItemAsync('userEmail', credentials.email);
+      await SecureStore.setItemAsync('userId', response.data.Data.Id);
 
       return true;
     }
@@ -37,6 +39,7 @@ export const logout = async (): Promise<void> => {
   await SecureStore.deleteItemAsync('accessToken');
   await SecureStore.deleteItemAsync('refreshToken');
   await SecureStore.deleteItemAsync('userEmail');
+  await SecureStore.deleteItemAsync('userId');
 };
 
 export const getAccessToken = async (): Promise<string | null> => {

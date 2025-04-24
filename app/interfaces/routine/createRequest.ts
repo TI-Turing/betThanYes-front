@@ -1,4 +1,4 @@
-export interface InsertRoutineRequest {
+export interface CreateRoutineRequest {
     userId: string;
     Name: string;
     isDefault: boolean;

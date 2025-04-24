@@ -1,18 +1,12 @@
-import api from "./api";
-import { InsertRoutineRequest} from '../interfaces/routine/request';
-
-
-interface CreateRoutineResponse {
-  id: string;
-  name: string;
-  // Otros campos que devuelve la API
-}
+import api from "../api";
+import { CreateRoutineRequest} from '../../interfaces/routine/createRequest';
+import { CreateRoutineResponse } from '../../interfaces/routine/createResponse';
 
 const ROUTES = {
   CREATE_ROUTINE: "/CreateRoutine",
 };
 
-const validateRoutineData = (data: InsertRoutineRequest) => {
+const validateRoutineData = (data: CreateRoutineRequest) => {
     console.log("Nombre: " + data.Name);
   if (!data.Name) {
     throw new Error("El nombre de la rutina es obligatorio");
@@ -20,7 +14,7 @@ const validateRoutineData = (data: InsertRoutineRequest) => {
   // Agrega otras validaciones según sea necesario
 };
 
-export const createRoutine = async (routineData: InsertRoutineRequest): Promise<CreateRoutineResponse> => {
+export const createRoutine = async (routineData: CreateRoutineRequest): Promise<CreateRoutineResponse> => {
   validateRoutineData(routineData);
   try {
     const response = await api.post<CreateRoutineResponse>( ROUTES.CREATE_ROUTINE, routineData);

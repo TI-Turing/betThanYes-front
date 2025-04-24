@@ -40,6 +40,14 @@
             "type": "reactnative",
             "request": "launch",
             "platform": "windows"
-        }
+        },
+        {
+            "name": "Debug in Exponent",
+            "program": "${workspaceFolder}/.vscode/launchReactNative.js",
+            "request": "launch",
+            "type": "reactnative",
+            "platform": "exponent",
+            "cwd": "${workspaceFolder}"
+     }
     ]
 }
