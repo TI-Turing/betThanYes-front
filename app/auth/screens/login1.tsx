@@ -3,12 +3,12 @@ import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Asegúrate de importar AsyncStorage
-import styles from './styles'; // Asegúrate de que la ruta sea correcta
+import styles from '../styles/styles'; // Asegúrate de que la ruta sea correcta
 import { useRouter } from 'expo-router';
-import { ValidateEmailRequest } from "../interfaces/account/validateEmailRequest";
-import { ValidateEmailResponse } from "../interfaces/account/validateEmailResponse";
-import { ApiResponse } from "../interfaces/ApiResponse";
-import { validateEmail } from "../services/validateEmail"; // Asegúrate de que la ruta sea correcta
+import { ValidateEmailRequest } from "../../interfaces/account/validateEmailRequest";
+import { ValidateEmailResponse } from "../../interfaces/account/validateEmailResponse";
+import { ApiResponse } from "../../interfaces/ApiResponse";
+import { validateEmail } from "../../services/validateEmail"; // Asegúrate de que la ruta sea correcta
 
 const LoginScreen = () => {
   const router = useRouter();
@@ -68,13 +68,13 @@ const LoginScreen = () => {
       if (emailExists == 1) {
         console.log('Correo registrado, redirigiendo a login2...');
         router.push({
-          pathname: '/auth/login2',
+          pathname: '/auth/screens/login2',
           params: { email },
         });
       } else {
         console.log('Correo no registrado, redirigiendo a register1...');
         router.push({
-          pathname: '/auth/register1',
+          pathname: '/auth/screens/register1',
           params: { email },
         });
       }

@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { useAuth } from './auth/authContext'; // ajusta la ruta si es diferente
+import { useAuth } from './auth/screens/authContext'; // ajusta la ruta si es diferente
 
 export default function Index() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -11,7 +11,7 @@ export default function Index() {
       if (isAuthenticated) {
         router.replace('./(tabs)/'); // redirige a la pantalla principal con tabs
       } else {
-        router.replace('/auth/login1'); // redirige al login
+        router.replace('/auth/screens/login1'); // redirige al login
       }
     }
   }, [isAuthenticated, isLoading]);

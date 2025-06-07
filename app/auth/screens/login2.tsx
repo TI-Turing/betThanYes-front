@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import styles from './styles';
+import styles from '../styles/styles';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useAuth } from '../auth/authContext';
-import { resetPassword } from "../services/resetPasswordService";
-import { ResetPasswordRequest } from "../interfaces/auth/resetPasswordRequest";
+import { useAuth } from './authContext';
+import { resetPassword } from "../../services/resetPasswordService";
+import { ResetPasswordRequest } from "../../interfaces/auth/resetPasswordRequest";
 
 const LoginPasswordScreen = () => {
   const router = useRouter();

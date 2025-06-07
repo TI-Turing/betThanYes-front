@@ -11,7 +11,7 @@ import React, {
     login as authServiceLogin,
     logout as authServiceLogout,
     getAccessToken,
-  } from '../services/authService';
+  } from '../../services/authService';
   
   interface AuthContextType {
     isAuthenticated: boolean;
@@ -60,6 +60,7 @@ import React, {
   
     const login = async (email: string, password: string): Promise<boolean> => {
       try {
+        console.log('Intentando iniciar sesión con:', email, password);
         const success = await authServiceLogin({ email, password });
   
         if (success) {

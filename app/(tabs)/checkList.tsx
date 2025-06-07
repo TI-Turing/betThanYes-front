@@ -22,7 +22,7 @@ import { CheckBox } from 'react-native-elements';
 import  styles  from "../styles/stylesRoutine"; // Importa tus estilos desde el archivo correspondiente
 import { createRoutine } from '../services/routine/create'
 import { GetAllRoutinesByUserId } from "../services/routine/getAll"; // Importa el servicio
-import  ProfileScreen  from "../auth/logout"; // Asegúrate de que la ruta sea correcta
+import  ProfileScreen  from "../auth/screens/logout"; // Asegúrate de que la ruta sea correcta
 import  ProgressRoutine  from "../components/progressRoutine"; // Asegúrate de que la ruta sea correcta
 import { useMenu } from "./_layout"; // Importa el contexto del menú global
 import { useTheme } from 'react-native-paper';

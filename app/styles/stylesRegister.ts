@@ -3,8 +3,9 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: '#121212',
+    flexGrow: 1,
+    padding: 16,
   },
   progressContainer: {
     position: 'absolute',
@@ -21,6 +22,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     marginTop: 20,
+    color: 'white',
   },
   greeting: {
     fontSize: 18,
@@ -75,7 +77,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   input: {
-    marginBottom: 15,
+    marginBottom: 16,
     backgroundColor: 'transparent',
   },
   button: {

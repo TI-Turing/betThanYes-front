@@ -3,9 +3,9 @@ import { View, Text, TouchableWithoutFeedback, Alert, TouchableOpacity } from 'r
 import { TextInput, Button } from 'react-native-paper';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import styles from '../styles/stylesRegister'; // Usa los mismos estilos que en login
-import { createUser } from '../services/createUser'; // Asegúrate de que la ruta sea correcta
-import { ApiRequest } from "../interfaces/user/createRequest";
+import styles from '../../styles/stylesRegister'; // Usa los mismos estilos que en login
+import { createUser } from '../../services/createUser'; // Asegúrate de que la ruta sea correcta
+import { ApiRequest } from "../../interfaces/user/createRequest";
 
 export default function RegisterStepOne() {
   const router = useRouter();
@@ -48,7 +48,7 @@ export default function RegisterStepOne() {
 
   const handleNext = () => {
     router.push({
-      pathname: '/auth/register2',
+      pathname: '/auth/screens/register2',
       params: { email, password },
     });
   };
